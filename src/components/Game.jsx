@@ -33,8 +33,6 @@ const Game = () => {
     const index = Math.floor(Math.random() * wordsArray.length);
     const newRandomWord = wordsArray[index];
 
-    const updatedWordsArray = wordsArray.filter((word, i) => i !== index); // Remove the word from the array
-    setWordsArray(updatedWordsArray);
     setRandomWord(newRandomWord);
     speakRandomword(newRandomWord);
   };
@@ -53,6 +51,12 @@ const Game = () => {
     if (inputWord.toLowerCase() === randomWord.toLowerCase()) {
       toast.success("Correct!");
       setCorrectWords([...correctWords, inputWord]);
+
+      // remove the correctly guessed word from wordarrray
+      const updatedWordsArray = wordsArray.filter(
+        (word) => word.toLowerCase() !== randomWord.toLowerCase()
+      );
+      setWordsArray(updatedWordsArray);
       setInputWord("");
       return;
     }
@@ -70,8 +74,6 @@ const Game = () => {
   return (
     <>
       <ToastContainer autoClose={3000} />
-
-      {/* <Flex gap="4px 10px" vertical align="center"> */}
 
       <div>
         <Row>
@@ -109,7 +111,6 @@ const Game = () => {
             <div
               style={{
                 backgroundColor: "#f5f5f5",
-                // margin: "1rem 0",
                 padding: "1rem",
                 borderRadius: "10px",
               }}
