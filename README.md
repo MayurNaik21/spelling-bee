@@ -18,11 +18,11 @@ This project was inspired by a similar application created by my mentor during m
 
 1. Clone the repository to your local machine:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/MayurNaik21/spelling-bee.git
     ```
 2. Navigate to the project directory:
     ```bash
-    cd <project-directory>
+    cd spelling-bee
     ```
 3. Install the dependencies:
     ```bash
