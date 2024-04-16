@@ -23,6 +23,7 @@ const Game = () => {
   const readCSVFile = async () => {
     // Path to the CSV file
     const filePath = "src/words/words.csv";
+    // const filePath = "./words.csv";
 
     // Fetch the CSV file, parse the data, and set the wordsArray
     fetch(filePath)
@@ -32,6 +33,7 @@ const Game = () => {
           delimiter: ",",
           header: false,
         });
+
         // Extract and set the words in wordsArray
         const words = parsedData.data
           .flat()
@@ -129,7 +131,10 @@ const Game = () => {
   const handleSkip = () => {
     if (randomWord !== "") {
       // Check if the randomWord is already in the skippedWords array
-      if (!skippedWords.includes(randomWord) && !correctWords.includes(randomWord)) {
+      if (
+        !skippedWords.includes(randomWord) &&
+        !correctWords.includes(randomWord)
+      ) {
         setSkippedWords([...skippedWords, randomWord]);
 
         // Remove the skipped word from wordsArray
@@ -151,7 +156,9 @@ const Game = () => {
       <div>
         <Row>
           <Col span={24}>
-            <div style={{ color: "#3a3637", fontSize: "2rem", padding: "2rem" }}>
+            <div
+              style={{ color: "#3a3637", fontSize: "2rem", padding: "2rem" }}
+            >
               <h2>Start Guessing</h2>
               <Button onClick={getRandomWord}>
                 {" "}
@@ -185,12 +192,14 @@ const Game = () => {
           </Col>
 
           <Col span={12}>
-            <div style={{
-              backgroundColor: "#f5f5f5",
-              padding: "1rem",
-              borderRadius: "10px",
-              overflow: "auto",
-            }}>
+            <div
+              style={{
+                backgroundColor: "#f5f5f5",
+                padding: "1rem",
+                borderRadius: "10px",
+                overflow: "auto",
+              }}
+            >
               <Divider>Result</Divider>
               <Flex gap="4px 0" wrap="wrap">
                 {correctWords.map((word, index) => (
@@ -211,8 +220,8 @@ const Game = () => {
                       color="error"
                     >
                       {word}
-                  </Tag>
-                ))}
+                    </Tag>
+                  ))}
               </Flex>
             </div>
           </Col>

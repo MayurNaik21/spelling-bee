@@ -44,9 +44,9 @@ This project was inspired by a similar application created by my mentor during m
 
 If you'd like to contribute to this project, please fork the repository and submit a pull request. Make sure to follow the code of conduct and contribution guidelines.
 
-## License
+## 🔗 Links
 
-This project is licensed under the MIT License.
+You can play a live demo of the game here: [click here](https://spelling-bee-react.netlify.app/)
 
 ## Contact
 
