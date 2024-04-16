@@ -161,7 +161,6 @@ const Game = () => {
             >
               <h2>Start Guessing</h2>
               <Button onClick={getRandomWord}>
-                {" "}
                 <SoundOutlined /> Speak Word
               </Button>
             </div>
