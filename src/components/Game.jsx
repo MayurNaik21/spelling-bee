@@ -9,17 +9,22 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Papa from "papaparse";
 
+// Main Game component
 const Game = () => {
-  const [inputWord, setInputWord] = useState("");
-  const [randomWord, setRandomWord] = useState("");
-  const [wordsArray, setWordsArray] = useState([]);
-  const [correctWords, setCorrectWords] = useState([]);
-  const [skippedWords, setSkippedWords] = useState([]);
-  const [wordIsGuessed, setWordIsGuessed] = useState(false);
+  // State variables
+  const [inputWord, setInputWord] = useState(""); // User input word
+  const [randomWord, setRandomWord] = useState(""); // Randomly selected word from CSV
+  const [wordsArray, setWordsArray] = useState([]); // List of words from CSV file
+  const [correctWords, setCorrectWords] = useState([]); // List of correctly guessed words
+  const [skippedWords, setSkippedWords] = useState([]); // List of skipped words
+  const [wordIsGuessed, setWordIsGuessed] = useState(false); // Tracks if a word has been guessed
 
+  // Function to read the CSV file and load words into the wordsArray
   const readCSVFile = async () => {
+    // Path to the CSV file
     const filePath = "src/words/words.csv";
 
+    // Fetch the CSV file, parse the data, and set the wordsArray
     fetch(filePath)
       .then((response) => response.text())
       .then((data) => {
@@ -27,6 +32,7 @@ const Game = () => {
           delimiter: ",",
           header: false,
         });
+        // Extract and set the words in wordsArray
         const words = parsedData.data
           .flat()
           .map((word) => word.trim())
@@ -38,53 +44,63 @@ const Game = () => {
       });
   };
 
+  // useEffect hook to read the CSV file when the component is mounted
   useEffect(() => {
     readCSVFile();
     setWordIsGuessed(true);
   }, []);
 
+  // Handler for input changes
   const handleChange = (e) => {
     setInputWord(e.target.value);
   };
 
+  // Function to get a new random word from wordsArray
   const getNewRandomWord = () => {
     const index = Math.floor(Math.random() * wordsArray.length);
     const newRandomWord = wordsArray[index];
     return newRandomWord;
   };
 
+  // Function to get a random word and handle speaking it
   const getRandomWord = () => {
     if (wordsArray.length === 0) {
       toast.success("All words have been guessed! Game over.");
       return;
     }
 
+    // If the word hasn't been guessed yet, speak the current random word
     if (!wordIsGuessed) {
-      speakRandomword(randomWord);
+      speakRandomWord(randomWord);
     } else {
+      // If the word has been guessed, get a new random word and speak it
       setWordIsGuessed(false);
       const newRandomWord = getNewRandomWord();
       setRandomWord(newRandomWord);
-      speakRandomword(newRandomWord);
+      speakRandomWord(newRandomWord);
     }
   };
 
-  const speakRandomword = (randomWord) => {
+  // Function to use the speech synthesis API to speak a word
+  const speakRandomWord = (randomWord) => {
     const synth = window.speechSynthesis;
     const utterThis = new SpeechSynthesisUtterance(randomWord);
     synth.speak(utterThis);
   };
 
+  // Function to check if the user's input matches the random word
   const checkRandomWord = () => {
     if (inputWord.toLowerCase() === "") {
       toast.warn("Please enter a word!");
       return;
     }
+
+    // Check if the user's input matches the random word
     if (inputWord.toLowerCase() === randomWord.toLowerCase()) {
       toast.success("Correct!");
       setCorrectWords([...correctWords, inputWord]);
 
-      // remove the correctly guessed word from wordarrray
+      // Remove the correctly guessed word from the wordsArray
       const updatedWordsArray = wordsArray.filter(
         (word) => word.toLowerCase() !== randomWord.toLowerCase()
       );
@@ -93,30 +109,41 @@ const Game = () => {
       setWordIsGuessed(true);
       return;
     }
+
+    // Inform the user that the guess was incorrect
     toast.error("Incorrect! Try again.");
     return;
   };
 
+  // Function to restart the game
   const restartGame = () => {
     setInputWord("");
-    setWordsArray([]);
     setRandomWord("");
+    setWordsArray([]);
     setCorrectWords([]);
-    readCSVFile();
+    setSkippedWords([]);
+    readCSVFile(); // Reload the words from the CSV file
   };
 
+  // Function to handle skipping a word
   const handleSkip = () => {
     if (randomWord !== "") {
-      setSkippedWords([...skippedWords, randomWord]);
-      const updatedWordsArray = wordsArray.filter(
-        (word) => word.toLowerCase() !== randomWord.toLowerCase()
-      );
-      setWordsArray(updatedWordsArray);
-      setInputWord("");
-      setWordIsGuessed(true);
+      // Check if the randomWord is already in the skippedWords array
+      if (!skippedWords.includes(randomWord) && !correctWords.includes(randomWord)) {
+        setSkippedWords([...skippedWords, randomWord]);
+
+        // Remove the skipped word from wordsArray
+        const updatedWordsArray = wordsArray.filter(
+          (word) => word.toLowerCase() !== randomWord.toLowerCase()
+        );
+        setWordsArray(updatedWordsArray);
+        setInputWord("");
+        setWordIsGuessed(true);
+      }
     }
   };
 
+  // Render the game UI
   return (
     <>
       <ToastContainer autoClose={3000} />
@@ -124,9 +151,7 @@ const Game = () => {
       <div>
         <Row>
           <Col span={24}>
-            <div
-              style={{ color: "#3a3637", fontSize: "2rem", padding: "2rem" }}
-            >
+            <div style={{ color: "#3a3637", fontSize: "2rem", padding: "2rem" }}>
               <h2>Start Guessing</h2>
               <Button onClick={getRandomWord}>
                 {" "}
@@ -160,14 +185,12 @@ const Game = () => {
           </Col>
 
           <Col span={12}>
-            <div
-              style={{
-                backgroundColor: "#f5f5f5",
-                padding: "1rem",
-                borderRadius: "10px",
-                overflow: "auto",
-              }}
-            >
+            <div style={{
+              backgroundColor: "#f5f5f5",
+              padding: "1rem",
+              borderRadius: "10px",
+              overflow: "auto",
+            }}>
               <Divider>Result</Divider>
               <Flex gap="4px 0" wrap="wrap">
                 {correctWords.map((word, index) => (
@@ -180,9 +203,14 @@ const Game = () => {
                   </Tag>
                 ))}
 
-                {skippedWords.map((word, index) => (
-                  <Tag icon={<CloseCircleOutlined />} key={index} color="error">
-                    {word}
+                {skippedWords.length > 0 &&
+                  skippedWords.map((word, index) => (
+                    <Tag
+                      icon={<CloseCircleOutlined />}
+                      key={index}
+                      color="error"
+                    >
+                      {word}
                   </Tag>
                 ))}
               </Flex>
